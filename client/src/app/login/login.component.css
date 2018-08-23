@@ -1,0 +1,17 @@
+input[type=email], input[type=password] {
+    display: block;
+    padding: 5px;
+    border: 1px solid black;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: slategray;
+    color: white;
+    padding: 10px 20px;
+    margin: 8px 0;
+}
+
+button:hover {
+    opacity: 0.7;
+}

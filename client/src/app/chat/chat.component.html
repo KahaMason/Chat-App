@@ -1,6 +1,8 @@
 <h2>Welcome</h2>
-<button>Logout</button>
+<button *ngIf="username" (click)="logout()">Logout</button>
 <h3>Chat Messages</h3>
-<div id="ChatLog"></div>
-<input id="ChatMessage">
-<button>Send</button>
+<div id="ChatLog">
+    <div *ngFor="let message of messages" id="ChatLogMessages">{{message}}</div>
+</div>
+<input [(ngModel)]="message" id="ChatMessage">
+<button (click)="sendMessage()">Send</button>

@@ -24,4 +24,14 @@ server.listen(port, () => {
 // Respond to User connection via Socket.io
 io.on('connection', (socket) => {
     console.log("User has connected");
+
+    // Responds to User disconnecting from socket
+    socket.on('disconnect', function() {
+        console.log("User has disconnected");
+    });
+    
+    // Responds to receiving a message
+    socket.on('add-message', (message) => {
+        io.emit('message', message);
+    });
 });

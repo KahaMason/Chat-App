@@ -10,7 +10,7 @@ li {
     float: left;
 }
 
-a:link {
+a {
     display: block;
     color: white;
     text-align: center;

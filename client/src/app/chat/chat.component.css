@@ -1,3 +1,30 @@
+.ChannelNavigation {
+    height: 100vh;
+    width: 200px;
+    float: left;
+    top: 0;
+    left: 0;
+    background-color: black;
+    overflow: hidden;
+}
+
+.ChannelNavigation a {
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    display: block;
+}
+
+.ChannelNavigation a:hover {
+    background-color: grey;
+    color: black;
+}
+
+.ChatBox {
+    margin-left: 200px;
+    padding-left: 20px;
+}
+
 #ChatLog {
     width: 800px;
     height: 600px;
@@ -15,7 +42,7 @@
     padding: 10px;
 }
 
-button {
+.btn {
     background-color: slategray;
     color: white;
     padding: 10px 20px;

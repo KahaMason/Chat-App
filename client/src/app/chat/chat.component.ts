@@ -10,8 +10,12 @@ import { Router } from '@angular/router';
 export class ChatComponent implements OnInit {
   message: string;  // Stores chat message
   messages: string[] = []; // Stores collection of chat messages
+  newchannel: string;
+  channels: string[] = [];
+
   username: string = sessionStorage.getItem('username');
-  connection;
+  channelfeed;
+  messagefeed;
 
   constructor(private socketService: SocketService, private router: Router) { }
 
@@ -26,22 +30,46 @@ export class ChatComponent implements OnInit {
     
     // If Login confirmed, subsribe to socket.
     else {
-      this.connection = this.socketService.getMessages().subscribe((message: string) => {
+      
+      // Subscribes to Channel Feed with new Channels added.
+      this.channelfeed = this.socketService.getChannels().subscribe((newchannel: string) => {
+        this.channels.push(newchannel);
+        this.newchannel = '';
+      });
+      
+      // Subscribes to Message Feed with chat messages sent / recieved.
+      this.messagefeed = this.socketService.getMessages().subscribe((message: string) => {
         this.messages.push(message);
         this.message = '';
       });
+
     }
   }
   
+  // Creates a new chat channel for all users.
+  addNewChannel() {
+    this.socketService.addChannel(this.newchannel);
+  }
+
+  // Join a new chat channel
+  joinChannel(channel) {
+    this.socketService.joinChannel(channel);
+  }
+
   // Sends message to all connected chat members over the server socket.
   sendMessage() {
     this.socketService.sendMessage('(' + this.username + '): ' + this.message);
   }
 
   ngOnDestroy() {
-    // Unsubscribe from socket when navigating away from chat page.
-    if(this.connection) {
-      this.connection.unsubscribe();
+    // Unsubscribe from Message Feed when leaving.
+    if(this.messagefeed) {
+      this.messagefeed.unsubscribe();
+    }
+
+    // Unsubscribe from Channel Feed when leaving.
+    if(this.channelfeed) {
+      this.channelfeed.unsubscribe();
     }
   }
 

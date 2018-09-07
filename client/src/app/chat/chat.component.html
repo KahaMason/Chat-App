@@ -6,6 +6,7 @@
 
 <div class="ChatBox">
     <h2>User: {{username}}</h2>
+    <h3>Role: {{role}}</h3>
     <button *ngIf="username" (click)="logout()" class="btn">Logout</button>
     <h3>Chat Messages</h3>
     <div id="ChatLog">

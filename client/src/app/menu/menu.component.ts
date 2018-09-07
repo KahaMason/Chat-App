@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-menu',
@@ -7,9 +8,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MenuComponent implements OnInit {
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   ngOnInit() {
+  }
+
+  logout() {
+    if(sessionStorage.getItem('username')) {
+      sessionStorage.clear();
+      this.router.navigateByUrl('login');
+    }
+
+    else {
+      alert("User has already been logged out");
+    }
   }
 
 }

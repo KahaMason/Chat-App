@@ -17,6 +17,7 @@ export class LoginComponent implements OnInit {
     // Responds if User is already currently logged in. Redirect to Chat.
     if (sessionStorage.getItem('username')) {
       alert("User is already logged in as: " + sessionStorage.getItem('username') );
+      this.router.navigateByUrl('chat');
     }
   }
 
@@ -24,9 +25,29 @@ export class LoginComponent implements OnInit {
   userLogin (event) {
     event.preventDefault();
 
-    sessionStorage.setItem("username", this.username);
+    if (this.username == "Mr KSM") {
+      sessionStorage.setItem("username", this.username);
+      sessionStorage.setItem("role", "Super User");
+      this.router.navigateByUrl('chat');
+    } 
+    
+    else if (this.username == "Group KSM") {
+      sessionStorage.setItem("username", this.username);
+      sessionStorage.setItem("role", "Group Admin");
+      this.router.navigateByUrl('chat');
+    }
 
-    this.router.navigateByUrl('chat');
+    else if (this.username == "KSM") {
+      sessionStorage.setItem("username", this.username);
+      sessionStorage.setItem("role", "User");
+      this.router.navigateByUrl('chat');
+    }
+
+    else {
+      alert("User Not Found");
+      this.username = '';
+      this.password = '';
+    }
   }
 
 }

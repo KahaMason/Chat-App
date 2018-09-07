@@ -14,6 +14,7 @@ export class ChatComponent implements OnInit {
   channels: string[] = [];
 
   username: string = sessionStorage.getItem('username');
+  role: string = sessionStorage.getItem('role');
   channelfeed;
   messagefeed;
 
@@ -23,7 +24,7 @@ export class ChatComponent implements OnInit {
     // Checks if there is a stored username value from login and redirects to login page if not found.
     if (!sessionStorage.getItem('username')) {
       sessionStorage.clear();
-      alert('User has not logged In');
+      alert('User is not logged in');
       this.router.navigateByUrl('login');
       
     }

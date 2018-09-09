@@ -27,7 +27,7 @@ export class LoginComponent implements OnInit {
 
     if (this.username == "Mr KSM") {
       sessionStorage.setItem("username", this.username);
-      sessionStorage.setItem("role", "Super User");
+      sessionStorage.setItem("role", "Super Admin");
       this.router.navigateByUrl('chat');
     } 
     

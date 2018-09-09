@@ -1,11 +1,109 @@
-<div *ngIf="role == 'Super User'">
-  <h1>Super User Tools</h1>
-  <h2>Welcome {{username}}</h2>
-  <h3>Role: {{role}}</h3>
+<div *ngIf="role == 'Super Admin' || role =='Group Admin'">
+  <h1>{{role}} Tools</h1>
+  <h2>Welcome: {{username}}</h2>
 </div>
 
-<div *ngIf="role == 'Group Admin'">
-  <h1>Group Admin Tools</h1>
-  <h2>Welcome {{username}}</h2>
-  <h3>Role: {{role}}</h3>
+<div id="container">
+  <div>
+    <div>
+      <h2>User Administration</h2>
+      <h3>Invite User</h3>
+      <form (submit)="createUser($event)">
+        <input type="text" placeholder="username" [(ngModel)]='newuser' name="newusername">
+        <input type="email" placeholder="email" [(ngModel)]='newuseremail' name="newuseremail">
+        <button type="submit">Invite User</button>
+      </form>
+    </div>
+    
+    <div *ngIf="role == 'Super Admin'">
+      <h3>Delete User (Super Admin)</h3>
+      <input [(ngModel)]="deleteuser">
+      <button (click)="deleteUser()">Delete User</button>
+    </div>
+    
+    <div>
+      <h3>Update Administrator</h3>
+      <select [(ngModel)]="selecteduser">
+        <option value="Mr KSM">Mr KSM</option>
+        <option value="Group KSM">Group KSM</option>
+        <option value="KSM">KSM</option>
+      </select>
+      <h5>Role:</h5> 
+      <select [(ngModel)]="changeuserrole">
+        <option value="Super Admin" *ngIf="role == 'Super Admin'">Super Admin</option>
+        <option value="Group Admin">Group Admin</option>
+        <option value="User">User</option>
+      </select>
+      <button (click)="changeRole()">Change User Role</button>
+    </div>
+  </div>
+  
+  <div>
+    <div>
+      <h2>Group Creation</h2>
+      <h3>Create Groups</h3>
+      <h4>Group Name:</h4> 
+      <input [(ngModel)]="groupname" placeholder="Group Name">
+      <button (click)="createGroup()">Create Group</button>
+    </div>
+    
+    <div>
+      <h3>Create Channel</h3>
+      <h4>Select Group</h4>
+      <select [(ngModel)]="groupselect">
+        <option value="Group 1">Group 1</option>
+      </select>
+      <h4>Channel Name:</h4>
+      <input [(ngModel)]="channelname" placeholder="Channel Name">
+      <button (click)="createChannel()">Create Channel</button>
+    </div>
+  </div>
+
+  <div>
+    <div>
+      <h2>Group Adminstration</h2>
+      <h3>Delete Group</h3>
+      <select>
+        <option value="Group 1">Group 1</option>
+        <option value="Group2">Group 2</option>
+        <option value="Group 3">Group 3</option>
+      </select>
+      <button (click)="deleteGroup()">Delete Group</button>
+    </div>
+
+    <div>
+      <h3>Delete Channel</h3>
+      <select>
+          <option value="Group 1">Group 1</option>
+          <option value="Group2">Group 2</option>
+          <option value="Group 3">Group 3</option>
+        </select>
+        <select>
+          <option value="Channel 1">Channel 1</option>
+          <option value="Channel 2">Channel 2</option>
+          <option value="Channel 3">Channel 3</option>
+        </select>
+        <button (click)="deleteChannel()">Delete Channel</button>
+    </div>
+
+    <div>
+      <h3>Remove User from Channel</h3>
+      <select>
+          <option value="Group 1">Group 1</option>
+          <option value="Group2">Group 2</option>
+          <option value="Group 3">Group 3</option>
+      </select>
+      <select>
+        <option value="Channel 1">Channel 1</option>
+        <option value="Channel 2">Channel 2</option>
+        <option value="Channel 3">Channel 3</option>
+      </select>
+      <select>
+        <option value="Mr KSM">Mr KSM</option>
+        <option value="Group KSM">Group KSM</option>
+        <option value="KSM">KSM</option>
+      </select>
+      <button (click)="removeUserFromChannel()">Remove User</button>
+    </div>
+  </div>
 </div>

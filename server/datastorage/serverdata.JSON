@@ -1,0 +1,5 @@
+{
+    "users": [{"name":"test1", "role":"User"}],
+    "groups": {},
+    "channels": {}
+}

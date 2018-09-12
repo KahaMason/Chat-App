@@ -1,49 +1,23 @@
-let express = require('express');
-let app = express();
+const express = require('express');
+const app = express();
+const http = require('http');
+const server = http.Server(app);
+const path = require('path');
+const socketIO = require('socket.io');
+const io = socketIO(server);
+const bodyParser = require('body-Parser');
+const fs = require('fs');
 
-let http = require('http');
-let server = http.Server(app);
-
-let path = require('path');
-
-let socketIO = require('socket.io');
-let io = socketIO(server);
-
-// Initialise Server on port 3000.
-const port = process.env.PORT || 3000;
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
 
 // Redirect Users to Client Distributable.
 app.use(express.static(path.join(__dirname, '../client/dist/Chat-App')));
 
-// Respond to Server Initialisation.
-server.listen(port, () => {
-    console.log("Server Initialised");
-    console.log("Listening on port: " + port);
-});
+// Form Functions
 
-// Respond to User connection via Socket.io.
-io.on('connection', (socket) => {
-    console.log("User has connected");
-
-    // Responds to User disconnecting from socket.
-    socket.on('disconnect', function() {
-        console.log("User has disconnected");
-    });
-    
-    // Responds to receiving a message.
-    socket.on('add-message', (message) => {
-        io.emit('message', message);
-    });
-
-    // Responds to creation of new chatroom channels.
-    socket.on('add-channel', (channel) => {
-        io.emit('channel', channel);
-        console.log("Channel Added: " + channel);
-    });
-
-    // Responds to requests to join new chatroom channel.
-    socket.on('join-channel', (channel) => {
-        //io.join(channel); // - Not Implemented Yet
-        console.log("joining channel: " + channel);
-    });
-});
+// Import Server Function Files
+require('./listen.js')(server);
+require('./socket.js')(app, io);
+require('./routes/auth.js')(app, fs);
+require('./routes/register')(app, fs);

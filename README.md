@@ -18,37 +18,50 @@ The client is detached from server functions and only handles client-side intera
 ➢ Socket.io/Client – Used to establish socket connection to server
 
 #### Components:
-Menu – Used to present all the app routes and navigational links
-Login – Used to present a login form for users to login to the chat system
-Chat – Chat Application that communicates with users on the same socket
+➢ Menu – Used to present all the app routes and navigational links
+➢ Login – Used to present a login form for users to login to the chat system
+➢ Chat – Chat Application that communicates with users on the same socket
 
 #### Routes:
-Login – Used to navigate to the login form
-Chat – Used to navigate to the chat rooms. Restricted Access: Users must be logged in
+➢ Login – Used to navigate to the login form
+➢ Chat – Used to navigate to the chat rooms. Restricted Access: Users must be logged in
 
 #### Modules:
-Forms Module – Modules necessary for the handling of forms. E.g. login.
-HttpModule – Module necessary for http server.
+➢ Forms Module – Modules necessary for the handling of forms. E.g. login.
+➢ HttpModule – Module necessary for http server.
+➢ HTTPClientModule - Used for POST form requests to server.
 
 #### Services:
-Socket Service – Used to establish socket client service to handle communication between server and clients. This includes send / receiving messages, channel list updates and channel creations.
-addChannel – Handles socket updates that adds a new channel and updates it in the channel navigation of all users subscribed to getChannels() observable.
-joinChannel – Handles request by users to join a new socket room to access new chat channel.
-getChannels – An observable is created and returned that catches all updates received by the socket relating to the updating of Channels Navigation.
-sendMessage – Transmits received messages to all other users connected to the socket.
-getMessages – An observable is created that monitors all incoming messages from the socket and creates updates to the chatlogs.
+➢ Socket Service – Used to establish socket client service to handle socket and message communication between server and clients.
+➢ Auth Service - Used to POST data to Server Routes for User Login Authentication.
 
 #### Structure:
+Admin
+    Admin.html - HTML Interface for users that have the Super / Group admin privileges to administer the chat group / channels and users.
+    Admin.ts - Holds functions that send HTTP POSTs to server that can create new user / channels / groups and also administer roles, channels and groups.
+Chat
+    Chat.html - HTML Interface for client to send and recieve messages over socket.
+    Chat.ts - Holds functions that subscribe to the Socket service hosted on the server to send and recieve messages to / from other users.
+Login
+    Login.html - HTML Interface for client to input User Authentication Data to send to the server.
+    Login.ts - Holds functions that gathers Authentication Input and HTTP POSTs data to server through Auth service for authentication.
+Menu
+    Menu.html - Navigational Listing that lists the app routes for users.
+    Menu.ts - Used to execute User Checks and Logout Feature.
+
+App.modules - Hosts all imported modules nessasary for app functionality.
+    FormsModule - Handles NG Form structure and data.
+    HTTPModule - Used for Client Side HTTP interaction with server.
+    HTTPClientModule - Used to HTTP POST data from client to server.
+    SocketService - Used to host Socket Service on client side.
 
 ##### Menu
 Router Links: Login & Chat – Menu component serves as a navigational bar for users to navigate between the different routes available in the app.
 
-##### Login Component
+##### Login
 Username & Password – Form input for username and password. No validation yet, simple store in session variables ‘username’
-
-userLogin($event) – Upon submission of the form, store username value in session storage as variable “username”. After storing variable, navigate app to route ‘Chat’.
-
-Session Storage: Username – Stored username as result of logging into the system. Used to identify users amongst chat logs. No user authentication implemented yet.
+userLogin() – HTTP Server Form POST function to send user authentication request via Auth Service. 
+Session Storage: Username / Role - Stores user information returned by Authentication Process (Auth Service) into session variables for client.
 
 ##### Chat
 
@@ -72,7 +85,21 @@ The server host the application and handles all socket requests and functions ma
 ➢ Socket.io – Used to establish connections between client
 ➢ Express – Used to host server for client connections
 
+#### Routes:
+➢ Auth - Auth Route Handles HTTP Forms sent from the clients to the server and authenticates user login data.
+➢ Reg - Reg Route Handles HTTP Forms sent from admin tools and registers a new user into the database.
+
 #### Structure:
+server.js - Node Server.
+listen.js - Module Import to Server.js - Hosts Server on localport:3000 and listens to client access.
+socket.js - Module Import to Server.js - Hosts server Socket communications between server and clients.
+routes
+    auth.js - Route used by the server to recieve HTTP POSTs to the server for User Authentication. 
+    register.js - Route used by the server to handle Admin Tools HTTP POSTs to server for registering a new user.
+datastorage
+    serverdata.JSON - Database - Stores the User, Channel and Group data for the server in JSON format.
+
+#### Functions:
 Io.on(‘connection’) – handles all socket functions and requests made by users connected to the server.
 Socket.on(‘add-message’, message) – Communicates ‘message’ to all users connected to the socket.
 Socket.on(‘add-channel’, channel) – Communicates the creation of a new chat channel to all users connected to the socket.

@@ -1,5 +1,5 @@
 {
-    "users": [{"name":"test1", "role":"User"}],
+    "users": [{"name":"Mr KSM", "role":"Super Admin"}, {"name":"test1", "role":"User"}],
     "groups": {},
     "channels": {}
 }

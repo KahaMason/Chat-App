@@ -1,5 +1,4 @@
 {
-    "users": [{"name":"Mr KSM", "role":"Super Admin"}, {"name":"test1", "role":"User"}],
-    "groups": {},
-    "channels": {}
+    "users":[{"name":"Mr KSM","role":"Super Admin"}],
+    "groups":[{"groupname":"Admin Group","channels":[{"channelname":"Super Admins"},{"channelname":"Group Admins"}]}]
 }

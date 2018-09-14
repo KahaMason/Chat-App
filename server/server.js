@@ -19,5 +19,9 @@ app.use(express.static(path.join(__dirname, '../client/dist/Chat-App')));
 // Import Server Function Files
 require('./listen.js')(server);
 require('./socket.js')(app, io);
+
+// Server Routes
 require('./routes/auth.js')(app, fs);
 require('./routes/register')(app, fs);
+require('./routes/users')(app, fs);
+require('./routes/groups')(app, fs);

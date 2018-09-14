@@ -8,7 +8,7 @@
     <div>
       <h2>User Administration</h2>
       <h3>Invite User</h3>
-      <form (submit)="createUser($event)">
+      <form (submit)="registerUser()">
         <input type="text" placeholder="username" [(ngModel)]='newuser' name="newusername">
         <input type="email" placeholder="email" [(ngModel)]='newuseremail' name="newuseremail">
         <button type="submit">Invite User</button>
@@ -17,16 +17,16 @@
     
     <div *ngIf="role == 'Super Admin'">
       <h3>Delete User (Super Admin)</h3>
-      <input [(ngModel)]="deleteuser">
-      <button (click)="deleteUser()">Delete User</button>
+      <select [(ngModel)]="deleteusername">
+         <option *ngFor="let user of users" value="{{user.name}}">{{user.name}}</option>
+       </select>
+       <button (click)="deleteUser()">Delete User</button>
     </div>
     
     <div>
       <h3>Update Administrator</h3>
       <select [(ngModel)]="selecteduser">
-        <option value="Mr KSM">Mr KSM</option>
-        <option value="Group KSM">Group KSM</option>
-        <option value="KSM">KSM</option>
+        <option *ngFor="let user of users" value="{{user.name}}">{{user.name}}</option>
       </select>
       <h5>Role:</h5> 
       <select [(ngModel)]="changeuserrole">
@@ -51,7 +51,7 @@
       <h3>Create Channel</h3>
       <h4>Select Group</h4>
       <select [(ngModel)]="groupselect">
-        <option value="Group 1">Group 1</option>
+        <option *ngFor="let group of groups" value="{{group.groupname}}">{{group.groupname}}</option>
       </select>
       <h4>Channel Name:</h4>
       <input [(ngModel)]="channelname" placeholder="Channel Name">
@@ -63,25 +63,16 @@
     <div>
       <h2>Group Adminstration</h2>
       <h3>Delete Group</h3>
-      <select>
-        <option value="Group 1">Group 1</option>
-        <option value="Group2">Group 2</option>
-        <option value="Group 3">Group 3</option>
+      <select [(ngModel)]="deletegroupname">
+        <option *ngFor="let group of groups" value="{{group.groupname}}">{{group.groupname}}</option>
       </select>
       <button (click)="deleteGroup()">Delete Group</button>
     </div>
 
     <div>
       <h3>Delete Channel</h3>
-      <select>
-          <option value="Group 1">Group 1</option>
-          <option value="Group2">Group 2</option>
-          <option value="Group 3">Group 3</option>
-        </select>
-        <select>
-          <option value="Channel 1">Channel 1</option>
-          <option value="Channel 2">Channel 2</option>
-          <option value="Channel 3">Channel 3</option>
+        <select [(ngModel)]="deletechannelname">
+          <option *ngFor= "let channel of groups.channels">{{channel.channelname}}</option>
         </select>
         <button (click)="deleteChannel()">Delete Channel</button>
     </div>

@@ -1,6 +1,6 @@
 module.exports = function(app, fs) {
     
-    // Handles Login Form Post Submissions via the Auth Service
+    // Authenticate User Login Data
     app.post('/api/auth', (req, res) => {
         console.log("Recieved Post Request from Client");
         var uname = req.body.username;
@@ -31,7 +31,7 @@ module.exports = function(app, fs) {
         });
     });
     
-    // Manual URL GET Authentication
+    // REST API of User Authentication
     app.get('/api/auth', (req, res) => {
         var uname = req.query.username;
         var datastorage;

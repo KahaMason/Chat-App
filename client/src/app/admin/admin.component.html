@@ -72,7 +72,7 @@
     <div>
       <h3>Delete Channel</h3>
         <select [(ngModel)]="deletechannelname">
-          <option *ngFor= "let channel of groups.channels">{{channel.channelname}}</option>
+          <option *ngFor = "let group of groups">{{group.channel}}</option>
         </select>
         <button (click)="deleteChannel()">Delete Channel</button>
     </div>

@@ -48,6 +48,11 @@ export class AdminService {
     return this.http.post<group>('/api/admin/groups/createchannel', { groupname:groupname, channelname:channelname});
   }
 
+  // Server Delete Group HTTP
+  deletegroup(groupname:string) {
+    return this.http.post<group>('/api/admin/groups/deletegroup', { groupname:groupname });
+  }
+
   // Server Fetch User List
   fetchUsers(): Observable<user[]> {
     return this.http.post<user[]>('/api/admin/users/fetchdata', {});

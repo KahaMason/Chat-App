@@ -60,7 +60,6 @@ module.exports = function(app, fs) {
                         return;
                     }
                 }
-                
                 res.send({'username': uname, 'success':true, 'status':"User Created"});
             }
         });

@@ -54,7 +54,7 @@ module.exports = function(app, fs) {
 
                 for (let i = 0; i < datastorage.users.length; i++) {
                     if (uname == datastorage.users[i].name) {
-                        delete datastorage.users[i];
+                        datastorage.users.splice(i, 1);
                         var newdata = JSON.stringify(datastorage);
 
                         fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err) {

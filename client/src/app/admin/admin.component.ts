@@ -43,8 +43,14 @@ export class AdminComponent implements OnInit {
     }
 
     else {
-      this.adminservice.fetchUsers().subscribe(data => this.users = data);
-      this.adminservice.fetchGroups().subscribe(data => this.groups = data);
+      this.adminservice.fetchUsers().subscribe(data => {
+        this.users = data;
+        console.log(this.users);
+      });
+      this.adminservice.fetchGroups().subscribe(data => {
+        this.groups = data
+        console.log(this.groups);
+      });
     }
   }
 
@@ -65,7 +71,17 @@ export class AdminComponent implements OnInit {
 
   // Delete a User
   deleteUser() {
-    console.log(this.deleteusername);
+    this.adminservice.deleteuser(this.deleteusername).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("User '" + data.username + " ' has been deleted");
+        }
+
+        else if (data.success == false) {
+            alert("Failed to delete User");
+        }
+      }
+    );
   }
 
   // Change the role of a User
@@ -78,7 +94,7 @@ export class AdminComponent implements OnInit {
           alert(data.username + " has not changed role");
         }
       }
-    )
+    );
   }
   
   // Create new Group to Server
@@ -113,7 +129,16 @@ export class AdminComponent implements OnInit {
 
   // Delete a Group
   deleteGroup() {
-    console.log(this.deletegroupname);
+    this.adminservice.deletegroup(this.deletegroupname).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("Group '" + data.groupname + " ' has been deleted");
+        }
+        else if (data.success == false) {
+          alert("Failed to delete group");
+        }
+      }
+    );
   }
 
   // Delete a Channel from a Group

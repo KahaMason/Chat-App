@@ -76,6 +76,33 @@ module.exports = function(app, fs) {
         });
     });
 
+    // Respond to HTTP Request to Delete Group
+    app.post('/api/admin/groups/deletegroup', (req, res) => {
+        var groupname = req.body.groupname;
+        var datastorage;
+
+        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
+            if (err) {console.log(err);}
+            else {
+                datastorage = JSON.parse(data);
+
+                for (let i = 0; i < datastorage.groups.length; i++) {
+                    if (groupname == datastorage.groups[i].groupname) {
+                        datastorage.groups.splice(i, 1);
+                        var newdata = JSON.stringify(datastorage);
+
+                        fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err) {
+                            if (err) throw err;
+                            else {res.send({'groupname':groupname, 'success':true});}
+                        });
+                        return;
+                    }
+                }
+                res.send({'groupname':groupname, 'success':false});
+            }
+        });
+    });
+
     // REST API for Group Creation
     app.get('/api/admin/groups/creategroup', (req, res) => {
         var groupname = req.query.groupname;

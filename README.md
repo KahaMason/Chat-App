@@ -3,6 +3,8 @@
 ## 3818ICT - Software Frameworks
 
 #### Kaha Mason (S2762038)
+#### App Login: Mr KSM PW: No Password - Super Admin
+#### Host: localhost:3000
 
 ### How to run application
 1. Open Terminal and navigate to the client folder.
@@ -18,13 +20,15 @@ The client is detached from server functions and only handles client-side intera
 ➢ Socket.io/Client – Used to establish socket connection to server
 
 #### Components:
+➢ Admin - Used to access administration tools to manage users groups and channels
 ➢ Menu – Used to present all the app routes and navigational links
 ➢ Login – Used to present a login form for users to login to the chat system
 ➢ Chat – Chat Application that communicates with users on the same socket
 
 #### Routes:
 ➢ Login – Used to navigate to the login form
-➢ Chat – Used to navigate to the chat rooms. Restricted Access: Users must be logged in
+➢ Chat – Used to navigate to the chat rooms. Restricted Access: Users must be logged in.
+➢ Admin - Used to navigate to admin tools. Restricted Access: Logged in user must be either a super user or group admin to access.
 
 #### Modules:
 ➢ Forms Module – Modules necessary for the handling of forms. E.g. login.
@@ -34,6 +38,7 @@ The client is detached from server functions and only handles client-side intera
 #### Services:
 ➢ Socket Service – Used to establish socket client service to handle socket and message communication between server and clients.
 ➢ Auth Service - Used to POST data to Server Routes for User Login Authentication.
+➢ Admin Service - Used to POST data to Server Admin Routes to execute Admin Operations on the server.
 
 #### Structure:
 Admin
@@ -54,6 +59,19 @@ App.modules - Hosts all imported modules nessasary for app functionality.
     HTTPModule - Used for Client Side HTTP interaction with server.
     HTTPClientModule - Used to HTTP POST data from client to server.
     SocketService - Used to host Socket Service on client side.
+
+##### Admin
+Admin is used to access administrator tools used to manage users, groups and channels.
+
+###### Admin Functions:
+Create / Invite User - Super / Group admins can invite users or create a new user.
+Delete User - Only Super Users can delete users.
+Update Administrator - Super / Group admins can update the role of any user.
+Group Creation - Super / Group admins can create new groups.
+Create Channel - Super / Group admins can create new channels within groups.
+Delete Group - Super / Group admins can delete existing groups.
+
+Note: Inputs don't update asynchronously so update to select inputs require a renavigation to admins tools.
 
 ##### Menu
 Router Links: Login & Chat – Menu component serves as a navigational bar for users to navigate between the different routes available in the app.
@@ -88,6 +106,20 @@ The server host the application and handles all socket requests and functions ma
 #### Routes:
 ➢ Auth - Auth Route Handles HTTP Forms sent from the clients to the server and authenticates user login data.
 ➢ Reg - Reg Route Handles HTTP Forms sent from admin tools and registers a new user into the database.
+➢ Users - Admin HTTP Route used by admin tools for admins to create / invite new users, update user roles and permissions and delete users.
+➢ Groups - Admin HTTP Route used by admins tools for admins to create new groups, create new channels and delete groups or channels.
+
+#### REST API:
+Auth Login Success - localhost:3000/api/auth?username=Mr%20KSM
+Auth Login Failure - localhost:3000/api/auth?username=MrG
+Register Success - localhost:3000/api/reg?username=MrG
+Register Failure - localhost:3000/api/reg?username=Mr%20KSM
+Update User Role Success - localhost:3000/api/admin/users/updaterole?username=Mr%20KSM&role=Group%20User
+Update User Role Failure - localhost:3000/api/admin/users/updaterole?username=MrG&role=Super%20Admin
+Group Creation Success - localhost:3000/api/admin/groups/creategroup?groupname=Users%20Group
+Group Creation Failure - localhost:3000/api/admin/groups/creategroup?groupname=Admin%20Group
+Channel Creation Success - localhost:3000/api/admin/groups/createchannel?groupname=Admin%20Group&channelname=My%20Channel
+Channel Creation Failure - localhost:3000/api/admin/groups/createchannel?groupname=Admin%20Group&channelname=Super%20Admins
 
 #### Structure:
 server.js - Node Server.
@@ -96,6 +128,8 @@ socket.js - Module Import to Server.js - Hosts server Socket communications betw
 routes
     auth.js - Route used by the server to recieve HTTP POSTs to the server for User Authentication. 
     register.js - Route used by the server to handle Admin Tools HTTP POSTs to server for registering a new user.
+    users.js - Admin Route used by admin tools to create / update / delete users from database.
+    groups.js - Admin Route used by admins tools to create / update / delete groups and channels from the database.
 datastorage
     serverdata.JSON - Database - Stores the User, Channel and Group data for the server in JSON format.
 

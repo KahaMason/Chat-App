@@ -4,7 +4,8 @@
   "description": "Chat App Server",
   "main": "server.js",
   "scripts": {
-    "test": "node server.js"
+    "app": "npm run build --prefix ../client && npm start",
+    "dev": "npm run start --prefix ../client"
   },
   "author": "Mr KSM",
   "license": "ISC",

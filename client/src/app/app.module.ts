@@ -9,7 +9,6 @@ import { SocketService } from './services/socket.service';
 import { MenuComponent } from './menu/menu.component';
 import { LoginComponent } from './login/login.component';
 import { ChatComponent } from './chat/chat.component';
-import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +16,6 @@ import { AdminComponent } from './admin/admin.component';
     MenuComponent,
     LoginComponent,
     ChatComponent,
-    AdminComponent
   ],
   imports: [
     BrowserModule,

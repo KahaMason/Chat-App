@@ -1,5 +1,13 @@
+.loginform {
+    margin: auto;
+    width: 400px;
+    padding: 10px;
+}
+
+
 input[type=email], input[type=password] {
     display: block;
+    width: 300px;
     padding: 5px;
     border: 1px solid black;
     box-sizing: border-box;

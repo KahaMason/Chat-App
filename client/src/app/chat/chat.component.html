@@ -1,17 +1,129 @@
-<div class ="ChannelNavigation">
-    <div *ngFor="let channel of channels"><a (click) ="joinChannel(channel)">{{channel}}</a></div>
-    <input [(ngModel)]="newchannel" id="NewChannel">
-    <button (click)="addNewChannel()">Add Channel</button>
-</div>
-
-<div class="ChatBox">
-    <h2>User: {{username}}</h2>
-    <h3>Role: {{role}}</h3>
-    <button *ngIf="username" (click)="logout()" class="btn">Logout</button>
-    <h3>Chat Messages</h3>
-    <div id="ChatLog">
-        <div *ngFor="let message of messages" id="ChatLogMessages">{{message}}</div>
+<div class="container">
+    <div class="chat side">
+        <div *ngIf="role == 'Super Admin' || role == 'Group Admin'">
+            <h2>Create Group</h2>
+            <form ngNativeValidate (submit)="createGroup()">
+                <input type="text" [(ngModel)]="newgroup" placeholder="Group Name" name="groupname" required>
+                <button type="submit">Create Group</button>
+            </form>
+            <h2>Create Channel</h2>
+            <form ngNativeValidate (submit)="createChannel()">
+                <select [(ngModel)]="selectedgroup" name="selectedgroupname" required>
+                    <ng-container *ngFor="let group of groups">
+                        <ng-container *ngIf="group.groupname != 'Default' && group.groupname != 'Admin Group'">
+                            <option value="{{group.groupname}}">{{group.groupname}}</option>
+                        </ng-container>
+                    </ng-container>
+                </select>
+                <input type="text" [(ngModel)]="newchannel" placeholder="Channel Name" name="channelname" required>
+                <button type="submit">Create Channel</button>
+            </form>
+        </div>
+        <div>
+            <h2>Groups:</h2>
+            <div *ngFor="let group of groups">
+                <h3>{{group.groupname}}</h3>
+                <div *ngFor="let channel of group.channels"><button (click)="joinChannel(group.groupname, channel.channelname)" class="channels">{{channel.channelname}}</button></div>
+            </div>
+        </div>
+        <div *ngIf="role == 'Super Admin' || role == 'Group Admin'">
+            <h2>Delete Group</h2>
+            <form ngNativeValidate (submit)="deleteGroup()">
+                <select [(ngModel)]="deletegroup" name="deletegroupname" required>
+                    <ng-container *ngFor="let group of groups">
+                        <ng-container *ngIf="group.groupname != 'Default' && group.groupname != 'Admin Group'">
+                            <option value="{{group.groupname}}">{{group.groupname}}</option>
+                        </ng-container>
+                    </ng-container>
+                </select>
+                <button type="submit">Delete Group</button>
+            </form>
+            <h2>Delete Channel</h2>
+            <form ngNativeValidate (submit)="deleteChannel()">
+                <select [(ngModel)]="deletechannelgroup" name="deletechannelgroupname" required>
+                    <ng-container *ngFor="let group of groups">
+                        <ng-container *ngIf="group.groupname != 'Default' && group.groupname != 'Admin Group'">
+                            <option value="{{group.groupname}}">{{group.groupname}}</option>
+                        </ng-container>
+                    </ng-container>
+                </select>
+                <input type="text" [(ngModel)]="deletechannel" placeholder="Channel Name" name="deletechannelname" required>
+                <button type="submit">Delete Channel</button>
+            </form>
+        </div>
     </div>
-    <input [(ngModel)]="message" id="ChatMessage">
-    <button (click)="sendMessage()" class="btn">Send</button>
+
+    <div class="chat middle">
+        <h2>Username: {{username}}</h2>
+        <h3>Role: {{role}}</h3>
+        <button *ngIf="username" (click)="logout()">Logout</button>
+        <h3>Chat Messages</h3>
+        <div id="ChatLog">
+            <div *ngFor="let message of messages" id="ChatLogMessages">{{message}}</div>
+        </div>
+        <input [(ngModel)]="message" id="ChatMessage" placeholder="Enter Chat Message">
+        <button (click)="sendMessage()">Send</button>
+    </div>
+
+    <div class="chat side">
+        <div *ngIf="role == 'Super Admin' || role == 'Group Admin'">
+            <div>
+                <h2>Invite User</h2>
+                <form ngNativeValidate (submit)="registerUser()">
+                    <input type="text" placeholder="username" [(ngModel)]='newuser' name="newusername" required>
+                    <button type="submit">Invite User</button>
+                </form>
+            </div>
+            <div>
+                <h2>Update User Role</h2>
+                <form ngNativeValidate (submit)="updateRole()">
+                    <select [(ngModel)]="selecteduser" name="selectedusername" required>
+                        <ng-container *ngFor="let user of users">
+                            <option *ngIf="role == 'Super Admin' && user.username != username" value="{{user.username}}">{{user.username}}</option>
+                            <option *ngIf="role == 'Group Admin' && user.username != username && user.role != 'Super Admin'" value="{{user.username}}">{{user.username}}</option>
+                        </ng-container>
+                    </select>
+                    <select [(ngModel)]="newrole" name="selectedrole" required>
+                        <option value="Super Admin" *ngIf="role == 'Super Admin'">Super Admin</option>
+                        <option value="Group Admin">Group Admin</option>
+                        <option value="Member">Member</option>
+                    </select>
+                    <button type="submit">Update Role</button>
+                </form>
+            </div>
+        </div>
+        <div>
+            <h2>Users:</h2>
+            <h3>Super Admins</h3>
+            <ul>
+                <ng-container *ngFor="let user of users">
+                    <li *ngIf="user.role == 'Super Admin'">{{user.username}}</li>
+                </ng-container>
+            </ul>
+            <h3>Group Admins</h3>
+            <ul>
+                <ng-container *ngFor="let user of users">
+                    <li *ngIf="user.role == 'Group Admin'">{{user.username}}</li>
+                </ng-container>
+            </ul>
+            <h3>Members</h3>
+            <ul>
+                <ng-container *ngFor="let user of users">
+                    <li *ngIf="user.role == 'Member'">{{user.username}}</li>
+                </ng-container>
+            </ul>
+        </div>
+        <div *ngIf="role == 'Super Admin'">
+            <h2>Delete User</h2>
+            <form ngNativeValidate (submit)="deleteUser()">
+                <select [(ngModel)]="deleteuser" name="deleteusername" required>
+                    <ng-container *ngFor="let user of users">
+                        <option *ngIf="role == 'Super Admin' && user.username != username" value="{{user.username}}">{{user.username}}</option>
+                        <option *ngIf="role == 'Group Admin' && user.username != username && user.role != 'Super Admin'" value="{{user.username}}">{{user.username}}</option>
+                    </ng-container>
+                </select>
+                <button type="submit">Delete User</button>
+            </form>
+        </div>
+    </div>
 </div>

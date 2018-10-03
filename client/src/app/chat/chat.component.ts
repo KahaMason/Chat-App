@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SocketService } from '../services/socket.service';
+import { AdminService } from '../services/admin.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -10,32 +11,48 @@ import { Router } from '@angular/router';
 export class ChatComponent implements OnInit {
   message: string;  // Stores chat message
   messages: string[] = []; // Stores collection of chat messages
-  newchannel: string;
-  channels: string[] = [];
+  users;
+  groups;
 
   username: string = sessionStorage.getItem('username');
   role: string = sessionStorage.getItem('role');
-  channelfeed;
+  
+  // Database & Socket Feeds
+  userfeed;
+  groupfeed;
   messagefeed;
 
-  constructor(private socketService: SocketService, private router: Router) { }
+  // Ng Form Binds for Admin Tools
+  newuser: string;
+  newchannel: string;
+  newgroup: string;
+  selecteduser: string;
+  selectedgroup: string;
+  newrole: string;
+  deleteuser: string;
+  deletegroup: string;
+  deletechannelgroup: string;
+  deletechannel: string;
+
+  constructor(private socketService: SocketService, private adminService: AdminService, private router: Router) { }
 
   ngOnInit() {
-    // Checks if there is a stored username value from login and redirects to login page if not found.
     if (!sessionStorage.getItem('username')) {
       sessionStorage.clear();
       alert('User is not logged in');
       this.router.navigateByUrl('login');
-      
     }
     
     // If Login confirmed, subsribe to socket.
     else {
-      
-      // Subscribes to Channel Feed with new Channels added.
-      this.channelfeed = this.socketService.getChannels().subscribe((newchannel: string) => {
-        this.channels.push(newchannel);
-        this.newchannel = '';
+      // Subscribe to Channel Feed to retrieve Observable Data of Stored Users
+      this.userfeed = this.adminService.fetchUsers().subscribe(data => {
+        this.users = data;
+      });
+
+      // Subscribe to Channel Feed to retrieve Observable Data of Stored Groups
+      this.groupfeed = this.adminService.fetchGroups().subscribe(data => {
+        this.groups = data;
       });
       
       // Subscribes to Message Feed with chat messages sent / recieved.
@@ -43,18 +60,113 @@ export class ChatComponent implements OnInit {
         this.messages.push(message);
         this.message = '';
       });
-
     }
   }
   
-  // Creates a new chat channel for all users.
-  addNewChannel() {
-    this.socketService.addChannel(this.newchannel);
+  // Register a New User to the Chat-Application
+  registerUser() {
+    this.adminService.registeruser(this.newuser).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("User " + data.username + " has been successfully created");
+        } else if (data.success == false) {
+          alert("User " + data.username + " already exists");
+        }
+        this.newuser = '';
+      },
+      error => {alert("Error: " + error);});
+  }
+  
+  // Update an Existing User's Role
+  updateRole() {
+    this.adminService.updaterole(this.selecteduser, this.newrole).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("User '" + data.username + "' has been changed to '" + data.role + "'");
+        } else if (data.success == false) {
+          alert(data.username + " has not changed role");
+        }
+        this.selecteduser = '';
+        this.newrole = '';
+      }
+    );
+  }
+
+  // Delete a User from Chat-App
+  deleteUser() {
+    this.adminService.deleteuser(this.deleteuser).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("User '" + data.username + "' has been deleted");
+        } else if (data.success == false) {
+          alert("Failed to delete User");
+        }
+        this.deleteuser = '';
+      }
+    );
+  }
+
+  // Create a new Group
+  createGroup() {
+    this.adminService.creategroup(this.newgroup).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("Group '" + data.groupname + "' has been created");
+        } else if (data.success == false) {
+          alert("Group '" + data.groupname + "' already exists");
+        }
+        this.newgroup = '';
+      }
+    );
+  }
+
+  // Delete an Existing Group
+  deleteGroup() {
+    this.adminService.deletegroup(this.deletegroup).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("Group '" + data.groupname + "' has been deleted")
+        } else if (data.success == false) {
+          alert("Error: Group Not Found");
+        }
+        this.deletegroup = '';
+      }
+    );
+  }
+
+  // Create a new Channel for Chat-Application
+  createChannel() {
+    console.log("Creating Channel");
+    this.adminService.createchannel(this.selectedgroup ,this.newchannel).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("Channel '" + data.channelname + " ' has been created");
+        } else if (data.success == false) {
+          alert("Channel '" + data.channelname + " ' already exists in Group '" + data.groupname +"'");
+        }
+        this.newchannel = '';
+      }
+    );
+  }
+
+  deleteChannel() {
+    this.adminService.deletechannel(this.deletechannelgroup, this.deletechannel).subscribe(
+      data => {
+        if (data.success == true) {
+          alert("Channel " + data.channelname + " has been deleted from " + data.groupname);
+        } else if (data.success == false) {
+          alert("Channel doesn't exist in " + data.groupname);
+        }
+        this.deletechannelgroup = '';
+        this.deletechannel = '';
+      }
+    );
   }
 
   // Join a new chat channel
-  joinChannel(channel) {
-    this.socketService.joinChannel(channel);
+  joinChannel(group, channel) {
+    console.log("Joining: " + group + " " + channel );
+    //this.socketService.joinChannel(channel);
   }
 
   // Sends message to all connected chat members over the server socket.
@@ -63,15 +175,10 @@ export class ChatComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    // Unsubscribe from Message Feed when leaving.
-    if(this.messagefeed) {
-      this.messagefeed.unsubscribe();
-    }
-
-    // Unsubscribe from Channel Feed when leaving.
-    if(this.channelfeed) {
-      this.channelfeed.unsubscribe();
-    }
+    // Unsubscribe from Feeds
+    if (this.userfeed) {this.userfeed.unsubscribe(); console.log("Unsubscribed from UserFeed");}
+    if (this.groupfeed) {this.groupfeed.unsubscribe(); console.log("Unsubscribed from GroupFeed");}
+    if (this.messagefeed) { this.messagefeed.unsubscribe(); console.log("Unsubscribed from MessageFeed");}
   }
 
   // Logout Function

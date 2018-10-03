@@ -5,12 +5,14 @@
   "main": "server.js",
   "scripts": {
     "app": "npm run build --prefix ../client && npm start",
-    "dev": "npm run start --prefix ../client"
+    "dev": "npm run start --prefix ../client",
+    "mongodb": "mkdir mongodb && start mongod --dbpath mongodb --nojournal"
   },
   "author": "Mr KSM",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
+    "mongodb": "^3.1.6",
     "socket.io": "^2.1.1"
   }
 }

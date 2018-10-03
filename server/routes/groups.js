@@ -1,42 +1,33 @@
-module.exports = function(app, fs) {
-    // Fetch Group Data to populate Admin Tools
-    app.post('/api/admin/groups/fetchdata', (req, res) => {
-        var datastorage;
-        var grouplist;
-
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-                grouplist = datastorage.groups;
-                res.send(grouplist);
-            }
-        });
+module.exports = function(app, db) {
+    // Fetch Group Data for Observables
+    app.post('/api/admin/groups/fetchdata', async (req, res) => {
+        const collection = db.collection('groups');
+        let fields = { projection: {groupname:1, channels:1}};
+        let groups = await collection.find({}, fields).toArray();
+        res.send(groups);
     });
     
     // Respond to HTTP Request to create a new group
     app.post('/api/admin/groups/creategroup', (req, res) => {
-        var groupname = req.body.groupname;
-        var datastorage;
+        var groupname = req.body.groupname.toString();
+        const collection = db.collection('groups');
 
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-
-                for (let i = 0; i < datastorage.groups.length; i++) {
-                    if (groupname == datastorage.groups[i].groupname) {
-                        res.send({'groupname':groupname, 'success':false});
+        collection.findOne({'groupname':groupname}, function (err, result){
+            if (err) throw err;
+            else if (result != null) {
+                if (result.groupname == groupname) {
+                    console.log("Group: '" + groupname + " ' already exists");
+                    res.send({'groupname':groupname, 'success':false});
+                    return;
+                }
+            } else {
+                collection.insertOne({'groupname':groupname, 'channels':[]}, function(err, result) {
+                    if (err) throw err;
+                    if (result != null) {
+                        console.log("Created New Group");
+                        res.send({'groupname':groupname, 'success':true});
                         return;
                     }
-                }
-
-                datastorage.groups.push({'groupname':groupname});
-                var newdata = JSON.stringify(datastorage);
-
-                fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err){
-                    if (err) throw err;
-                    else {res.send({'groupname':groupname, 'success':true});}
                 });
             }
         });
@@ -44,106 +35,68 @@ module.exports = function(app, fs) {
 
     // Respond to HTTP Request to create new Channel
     app.post('/api/admin/groups/createchannel', (req, res) => {
-        var groupname = req.body.groupname;
-        var channelname = req.body.channelname;
-        var datastorage;
-
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-                
-                for (let g = 0; g < datastorage.groups.length; g++) {
-                    for (let c = 0; c < datastorage.groups[g].channels.length; c++) {
-                        if (groupname == datastorage.groups[g].groupname && channelname == datastorage.groups[g].channels[c].channelname) {
-                            res.send({'groupname':groupname, 'channelname':channelname, 'success':false});
-                            return;
-                        }
+        var groupname = req.body.groupname.toString();
+        var channelname = req.body.channelname.toString();
+        const collection = db.collection('groups');
+        var searchquery = {'groupname':groupname, 'channels':{channelname:channelname}};
+        var insertchannel = { $push: {channels:{channelname:channelname}}};
+        
+        collection.findOne(searchquery, function(err, result) {
+            if (err) throw err;
+            else if (result != null) {
+                console.log("Found an Existing Channel");
+                res.send({'groupname':groupname, 'channelname':channelname, 'success':false});
+                return;
+            } else {
+                collection.updateOne({groupname:groupname}, insertchannel, function(err, result) {
+                    if (err) throw err;
+                    else if (result != null) {
+                        console.log("Created New Channel");
+                        res.send({'groupname':groupname, 'channelname':channelname, 'success':true});
+                        return;
                     }
-                }
-
-                for (let i = 0; i < datastorage.groups.length; i++) {
-                    if (groupname == datastorage.groups[i].groupname) {
-                        datastorage.groups[i].channels.push({'channelname':channelname});
-                        var newdata = JSON.stringify(datastorage);
-                        fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err) {
-                            if (err) throw err;
-                            else {res.send({'groupname':groupname, 'channelname':channelname, 'success':true});}
-                        });
-                    }
-                }
+                });
             }
         });
     });
 
     // Respond to HTTP Request to Delete Group
     app.post('/api/admin/groups/deletegroup', (req, res) => {
-        var groupname = req.body.groupname;
-        var datastorage;
+        var groupname = req.body.groupname.toString();
+        const collection = db.collection('groups');
 
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-
-                for (let i = 0; i < datastorage.groups.length; i++) {
-                    if (groupname == datastorage.groups[i].groupname) {
-                        datastorage.groups.splice(i, 1);
-                        var newdata = JSON.stringify(datastorage);
-
-                        fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err) {
-                            if (err) throw err;
-                            else {res.send({'groupname':groupname, 'success':true});}
-                        });
-                        return;
-                    }
-                }
-                res.send({'groupname':groupname, 'success':false});
+        collection.deleteOne({'groupname':groupname}, function(err, group) {
+            if (err) throw err;
+            else if (group != null) {
+                console.log("Deleting Group: " + groupname);
+                res.send({'groupname':groupname, 'success':true});
+                return;
             }
+            res.send({'groupname':groupname, 'success':false});
         });
     });
 
-    // REST API for Group Creation
-    app.get('/api/admin/groups/creategroup', (req, res) => {
-        var groupname = req.query.groupname;
-        var datastorage;
+    // Respond to HTTP Request to Delete Channel
+    app.post('/api/admin/groups/deletechannel', (req, res) => {
+        var groupname = req.body.groupname.toString();
+        var channelname = req.body.channelname.toString();
+        const collection = db.collection('groups');
+        var searchquery = {'groupname':groupname, 'channels':{channelname:channelname}};
+        var deletechannel = { $pull: {channels:{channelname:channelname}}};
 
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-
-                for (let i = 0; i < datastorage.groups.length; i++) {
-                    if (groupname == datastorage.groups[i].groupname) {
-                        res.send({'groupname':groupname, 'success':false, 'status':"Group already exists"});
-                        return;
+        collection.findOne(searchquery, function(err, result) {
+            if (err) throw err;
+            else if (result != null) {
+                collection.updateOne({groupname:groupname}, deletechannel, function(err, result) {
+                    if (err) throw err;
+                    else if (result != null) {
+                        console.log("Deleted Channel '" + channelname + "' from Group '" + groupname + "'");
+                        res.send({'groupname':groupname, 'channelname':channelname, 'success':true});
                     }
-                }
-                res.send({'groupname':groupname, 'success':true, 'status':"Group has been created"});
-            }
-        });
-    });
-
-    // REST API for Channel Creation
-    app.get('/api/admin/groups/createchannel', (req, res) => {
-        var groupname = req.query.groupname;
-        var channelname = req.query.channelname;
-        var datastorage;
-
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-                
-                for (let g = 0; g < datastorage.groups.length; g++) {
-                    for (let c = 0; c < datastorage.groups[g].channels.length; c++) {
-                        if (groupname == datastorage.groups[g].groupname && channelname == datastorage.groups[g].channels[c].channelname) {
-                            res.send({'groupname':groupname, 'channelname':channelname, 'success':false, 'status':"Channel already exist"});
-                            return;
-                        }
-                    }
-                }
-                res.send({'groupname':groupname, 'channelname':channelname, 'success':true, 'status':"Channel has Been created"});
+                });
+                return;
+            } else {
+                res.send({'groupname':groupname, 'channelname':channelname, 'success':false});
             }
         });
     });

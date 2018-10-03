@@ -1,93 +1,48 @@
-module.exports = function(app, fs) {
+module.exports = function(app, db) {
     // Fetch Users List to populate Admin Tools
-    app.post('/api/admin/users/fetchdata', (req, res) => {
-        var datastorage;
-        var userlist;
-
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) throw err;
-            else {
-                datastorage = JSON.parse(data);
-                userlist = datastorage.users;
-                res.send(userlist);
-            }
-        });
+    app.post('/api/admin/users/fetchdata', async (req, res) => {
+        const collection = db.collection('users');
+        let fields = { projection: {username:1, role:1, status:1}};
+        let users = await collection.find({}, fields).toArray();
+        res.send(users);
     });
     
     // Respond to HTTP Request to Update User Roles
     app.post('/api/admin/users/updaterole', (req, res) => {
-        var datastorage;
-        var uname = req.body.username;
-        var newrole = req.body.role;
-
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-
-                for (let i = 0; i < datastorage.users.length; i++) {
-                    if (uname == datastorage.users[i].name) {
-                        datastorage.users[i].role = newrole;
-                        var newdata = JSON.stringify(datastorage);
-                        
-                        fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err) {
-                            if (err) throw err;
-                            else {res.send({'username':uname, 'role':newrole, 'success':true});}
-                        });
-                        return;
-                    }
-                }
-                res.send({'username':uname, 'success':false});
+        var uname = req.body.username.toString();
+        var newrole = req.body.role.toString();
+        const collection = db.collection('users');
+        var updaterole =  { $set: {role:newrole} };
+        
+        collection.updateOne({username:uname}, updaterole, function(err, result) {
+            if (err) throw err;
+            else if (result != null) {
+                console.log("Updated User Role");
+                res.send({'username':uname, 'role':newrole, 'success':true});
+                return;
             }
+            res.send({'username':uname, 'success':false});
         });
     });
 
     // Respond to HTTP Request to Delete User
     app.post('/api/admin/users/deleteuser', (req, res) => {
-        var datastorage;
-        var uname = req.body.username;
+        var uname = req.body.username.toString();
+        const collection = db.collection('users');
+        var query = {username: uname};
 
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
+        console.log("Attempting to Delete User");
 
-                for (let i = 0; i < datastorage.users.length; i++) {
-                    if (uname == datastorage.users[i].name) {
-                        datastorage.users.splice(i, 1);
-                        var newdata = JSON.stringify(datastorage);
-
-                        fs.writeFile('./datastorage/serverdata.json', newdata, 'utf-8', function(err) {
-                            if (err) throw err;
-                            else {res.send({'username':uname, 'success':true});}
-                        });
-                        return;
-                    }
-                }
+        collection.deleteOne(query, function(err, result) {
+            if (err) throw err
+            else if (result != null) {
+                console.log(uname + ' has been deleted');
+                res.send({'username':uname, 'success':true});
+                return;
+            } else {
+                // Catches Error if MongoDB didn't return a match
+                console.log("Error: Query didn't return matching User");
                 res.send({'username':uname, 'success':false});
-            }
-        });
-    });
-
-    // REST API for Updating User Roles
-    app.get('/api/admin/users/updaterole', (req, res) => {
-        var datastorage;
-        var uname = req.query.username;
-        var newrole = req.query.role;
-
-        fs.readFile('./datastorage/serverdata.json', 'utf-8', function(err, data) {
-            if (err) {console.log(err);}
-            else {
-                datastorage = JSON.parse(data);
-
-                for (let i = 0; i < datastorage.users.length; i++) {
-                    if (uname == datastorage.users[i].name) {
-                        res.send({'username':uname, 'role':newrole, 'success':true, 'status':"Role has been updated"});
-                        return;
-                    }
-                }
-
-                res.send({'username':uname, 'success':false, 'status':"User doesn't exist"});
             }
         });
     });

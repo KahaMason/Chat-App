@@ -10,7 +10,11 @@ export interface user {
 
 export interface group {
   groupname: string;
-  channels: string[];
+  success: boolean;
+}
+
+export interface channel {
+  groupname: string;
   channelname: string;
   success: boolean;
 }
@@ -43,14 +47,19 @@ export class AdminService {
     return this.http.post<group>('/api/admin/groups/creategroup', { groupname:groupname});
   }
 
-  // Server Create Channel HTTP
-  createchannel(groupname:string, channelname:string) {
-    return this.http.post<group>('/api/admin/groups/createchannel', { groupname:groupname, channelname:channelname});
-  }
-
   // Server Delete Group HTTP
   deletegroup(groupname:string) {
     return this.http.post<group>('/api/admin/groups/deletegroup', { groupname:groupname });
+  }
+
+  // Server Create Channel HTTP
+  createchannel(groupname:string, channelname:string) {
+    return this.http.post<channel>('/api/admin/groups/createchannel', {groupname:groupname, channelname:channelname});
+  }
+
+  // Server Delete Channel HTTP
+  deletechannel(groupname:string, channelname:string) {
+    return this.http.post<channel>('/api/admin/groups/deletechannel', {groupname:groupname, channelname:channelname});
   }
 
   // Server Fetch User List

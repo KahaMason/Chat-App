@@ -1,2 +1,5 @@
 # Server Dependencies
 /node_modules
+
+# MongoDB Diagnostic Logs
+/mongodb

@@ -1,6 +1,10 @@
-<h2>Login</h2>
-<form (submit)="userLogin()">
-  <input type="email" placeholder="Username" [(ngModel)]='username' name="username" id="username">
-  <input type="password" placeholder="Password" [(ngModel)]='password' name="password" id="password">
-  <button type="submit">Login</button>
-</form>
+<div class="containter">
+  <div class="loginform">
+    <h2>Chat-App Login</h2>
+    <form (submit)="userLogin()">
+    <input type="email" placeholder="Username" [(ngModel)]='username' name="username" id="username">
+    <input type="password" placeholder="Password" [(ngModel)]='password' name="password" id="password">
+    <button type="submit">Login</button>
+  </form>
+  </div>
+</div>

@@ -14,8 +14,11 @@ export class ChatComponent implements OnInit {
   users;
   groups;
 
+  // Session Storage for Current User and Current Group & Channel
   username: string = sessionStorage.getItem('username');
   role: string = sessionStorage.getItem('role');
+  currentgroup:string = sessionStorage.getItem('currentgroup');
+  currentchannel:string = sessionStorage.getItem('currentchannel');
   
   // Database & Socket Feeds
   userfeed;
@@ -60,6 +63,8 @@ export class ChatComponent implements OnInit {
         this.messages.push(message);
         this.message = '';
       });
+
+      this.socketService.defaultChannel(this.username);
     }
   }
   
@@ -149,6 +154,7 @@ export class ChatComponent implements OnInit {
     );
   }
 
+  // Delete a Channel from Group
   deleteChannel() {
     this.adminService.deletechannel(this.deletechannelgroup, this.deletechannel).subscribe(
       data => {
@@ -165,13 +171,28 @@ export class ChatComponent implements OnInit {
 
   // Join a new chat channel
   joinChannel(group, channel) {
-    console.log("Joining: " + group + " " + channel );
-    //this.socketService.joinChannel(channel);
+    if (group !== this.currentgroup && channel !== this.currentchannel) {
+      var leavechannel = (this.currentgroup +  " " + this.currentchannel);
+      var leavemessage = (this.username + " has left the channel");
+      var joinchannel = (group + " " + channel);
+      var joinmessage = (this.username + " has joined " + channel);
+      this.messages = [];
+
+      // Disconnect from Current Channel and Join New Channel
+      this.socketService.leaveChannel(leavechannel, leavemessage);
+      this.socketService.joinChannel(joinchannel, joinmessage);
+      
+      // Update Current Channel when joining New Channel
+      this.currentgroup = group;
+      this.currentchannel = channel;
+    }
   }
 
-  // Sends message to all connected chat members over the server socket.
+  // Sends message to all connected chat members in channel
   sendMessage() {
-    this.socketService.sendMessage('(' + this.username + '): ' + this.message);
+    var channel = (this.currentgroup + " " + this.currentchannel);
+    var message = ('(' + this.username + '): ' + this.message);
+    this.socketService.sendMessage(channel, message);
   }
 
   ngOnDestroy() {

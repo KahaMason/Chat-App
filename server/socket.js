@@ -8,20 +8,32 @@ module.exports = function (app, io){
             console.log("User has disconnected");
         });
     
-        // Responds to receiving a message.
-        socket.on('add-message', (message) => {
-            io.emit('message', message);
+        // Responds to receiving a message and emit to channel.
+        socket.on('add-message', (channel, message) => {
+            io.to(channel).emit("message", message);
         });
 
-        // Responds to creation of new chatroom channels.
-        socket.on('add-channel', (channel) => {
-            io.emit('channel', channel);
-            console.log("Channel Added: " + channel);
+        // Join Default Channel on Login
+        socket.on('default-channel', (username) => {
+            var defaultchannel = "Default Welcome to Chat App";
+            var message = (username + " has joined the channel");
+            socket.join(defaultchannel, () => {
+                socket.to(defaultchannel).emit("message", message);
+            });
         });
 
         // Responds to requests to join new chatroom channel.
-        socket.on('join-channel', (channel) => {
-            console.log("joining channel: " + channel);
+        socket.on('join-channel', (joinchannel, joinmessage) => {
+            socket.join(joinchannel, () => {
+                io.to(joinchannel).emit("message", joinmessage);
+            });
+        });
+        
+        // Disconnect from Previous Channel when Joining New Channel
+        socket.on('leave-channel', (leavechannel, leavemessage) => {
+            socket.leave(leavechannel, () => {
+                io.to(leavechannel).emit("message", leavemessage);
+            });
         });
     });
 }

@@ -6,7 +6,8 @@
   "scripts": {
     "app": "npm run build --prefix ../client && npm start",
     "dev": "npm run start --prefix ../client",
-    "mongodb": "mkdir mongodb && start mongod --dbpath mongodb --nojournal"
+    "premongo": "mkdir mongodb",
+    "mongodb": "start mongod --dbpath mongodb --nojournal"
   },
   "author": "Mr KSM",
   "license": "ISC",

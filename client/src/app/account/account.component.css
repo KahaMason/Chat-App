@@ -1,0 +1,23 @@
+.accountdetails {
+    margin: auto;
+    width: 400px;
+    padding: 10px;
+}
+
+input {
+    display: block;
+    margin: 5px 0;
+    width: 300px;
+    text-align: center;
+}
+
+button {
+    background-color: slategray;
+    color: white;
+    padding: 5px 10px;
+    margin: 8px 0;
+}
+
+button:hover {
+    opacity: 0.7;
+}

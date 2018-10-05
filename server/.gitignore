@@ -1,5 +1,8 @@
 # Server Dependencies
 /node_modules
 
-# MongoDB Diagnostic Logs
+# MongoDB Database System
 /mongodb
+
+#  UserImages Upload File
+/userimages

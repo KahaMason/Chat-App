@@ -6,13 +6,14 @@
   "scripts": {
     "app": "npm run build --prefix ../client && npm start",
     "dev": "npm run start --prefix ../client",
-    "premongo": "mkdir mongodb",
+    "prestartup": "mkdir mongodb && mkdir userimages",
     "mongodb": "start mongod --dbpath mongodb --nojournal"
   },
   "author": "Mr KSM",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.3",
+    "formidable": "^1.2.1",
     "mongodb": "^3.1.6",
     "socket.io": "^2.1.1"
   }

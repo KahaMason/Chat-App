@@ -6,12 +6,14 @@ const path = require('path');
 const socketIO = require('socket.io');
 const io = socketIO(server);
 const bodyParser = require('body-Parser');
+const formidable = require('formidable');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 
 // Redirect Users to Client Distributable.
 app.use(express.static(path.join(__dirname, '../client/dist/Chat-App')));
+app.use('/images', express.static(path.join(__dirname, './userimages')));
 
 // Establish MongoDB Connection
 const MongoClient = require('mongodb').MongoClient;
@@ -22,9 +24,6 @@ MongoClient.connect(url, function(err, client) {
     const dbName = 'chat-app';
     const db = client.db(dbName);
 
-    // Mongo Database Initialisation
-    // require('./mongodbinit.js')(db);
-
     // Import Server Files and Routes
     require('./listen.js')(server);
     require('./socket.js')(app, io, db);
@@ -33,4 +32,5 @@ MongoClient.connect(url, function(err, client) {
     require('./routes/register.js')(app, db);
     require('./routes/users.js')(app, db);
     require('./routes/groups.js')(app, db);
+    require('./routes/accounts.js')(app, db, formidable);
 });

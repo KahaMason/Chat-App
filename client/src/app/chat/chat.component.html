@@ -54,16 +54,24 @@
     </div>
 
     <div class="chat middle">
-        <h2>Username: {{username}}</h2>
-        <h3>Role: {{role}}</h3>
-        <button *ngIf="username" (click)="logout()">Logout</button>
-        <h3>{{currentgroup}} ({{currentchannel}})</h3>
-        <h3>Chat Messages</h3>
-        <div id="ChatLog">
-            <div *ngFor="let message of messages" id="ChatLogMessages">{{message}}</div>
+        <div id="userprofile">
+            <div id="profilepic" *ngIf="profilepic != null">
+                    <img src="images\{{profilepic}}" height="256" width="256">
+            </div>
+            <div id="profiledetails">
+                <h2>Username: {{username}}</h2>
+                <h3>Role: {{role}}</h3>
+            </div>
         </div>
-        <input [(ngModel)]="message" id="ChatMessage" placeholder="Enter Chat Message">
-        <button (click)="sendMessage()">Send</button>
+        <h3>{{currentgroup}} ({{currentchannel}})</h3>
+        <div>
+            <h2>Chat Messages</h2>
+            <div id="ChatLog">
+                <div *ngFor="let message of messages" id="ChatLogMessages">{{message}}</div>
+            </div>
+            <input [(ngModel)]="message" id="ChatMessage" placeholder="Enter Chat Message">
+            <button (click)="sendMessage()">Send</button>
+        </div>
     </div>
 
     <div class="chat side">
@@ -98,19 +106,28 @@
             <h3>Super Admins</h3>
             <ul>
                 <ng-container *ngFor="let user of users">
-                    <li *ngIf="user.role == 'Super Admin'">{{user.username}}</li>
+                    <li *ngIf="user.role == 'Super Admin'">
+                        <ng-container *ngIf="user.profilepic != null"><img src="images\{{user.profilepic}}" height="60" width="60"></ng-container>
+                        {{user.username}}
+                    </li>
                 </ng-container>
             </ul>
             <h3>Group Admins</h3>
             <ul>
                 <ng-container *ngFor="let user of users">
-                    <li *ngIf="user.role == 'Group Admin'">{{user.username}}</li>
+                    <li *ngIf="user.role == 'Group Admin'">
+                        <ng-container *ngIf="user.profilepic != null"><img src="images\{{user.profilepic}}" height="60" width="60"></ng-container>
+                        {{user.username}}
+                    </li>
                 </ng-container>
             </ul>
             <h3>Members</h3>
             <ul>
                 <ng-container *ngFor="let user of users">
-                    <li *ngIf="user.role == 'Member'">{{user.username}}</li>
+                    <li *ngIf="user.role == 'Member'">
+                        <ng-container *ngIf="user.profilepic != null"><img src="images\{{user.profilepic}}" height="60" width="60"></ng-container>
+                        {{user.username}}
+                    </li>
                 </ng-container>
             </ul>
         </div>

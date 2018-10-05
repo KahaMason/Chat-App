@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="accountdetails">
+    <h1>Account Details</h1>
+    <div>
+      <img src="images\{{profilepic}}" height="256" width="256">
+      <h2>{{username}}</h2>
+    </div>
+    <div>
+      <h2> Update Password </h2>
+      <form ngNativeValidate (submit)="updatePassword()">
+        <input type="password" [(ngModel)]="currentpassword" name="currentpassword" placeholder="Current Password" required>
+        <input type="password" [(ngModel)]="newpassword" name="newpassword" placeholder="New Password" required>
+        <input type="password" [(ngModel)]="confirmpassword" name="confirmpassword" placeholder="Confirm New Password" required>
+        <button type="submit">Update Password</button>
+      </form>
+    </div>
+    <div>
+      <h2>Profile Picture</h2>
+      <h3>File Upload</h3>
+      <form>
+        <input type="file" (change)="onFileSelected($event)" name="uploadfile" id="uploadfile"/>
+        <button type="button" (click)="onUpload()">Upload</button>
+      </form>
+    </div>
+
+  </div>
+</div>

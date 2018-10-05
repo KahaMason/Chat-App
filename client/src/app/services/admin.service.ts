@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 export interface user {
   username: string;
   role: string;
+  profilepic: string;
   success: boolean;
 }
 

@@ -29,7 +29,6 @@ export class LoginComponent implements OnInit {
       data => {
         // Assign returned Auth Data to Session Storage
         sessionStorage.setItem('username', data.username);
-        sessionStorage.setItem('role', data.role);
         sessionStorage.setItem('currentgroup', 'Default');
         sessionStorage.setItem('currentchannel', 'Welcome to Chat App');
         this.router.navigateByUrl('chat');
